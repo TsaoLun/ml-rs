@@ -68,8 +68,8 @@ fn _or() {
 }
 
 /// 异或门无法通过一条直线分隔，单层感知器无法表示异或门
-
-/// 多层感知器
+///
+/// 可通过多层感知器实现 XOR: NAND + OR => AND
 fn xor(x1: f64, x2: f64) -> usize {
     let s1 = nand(x1, x2);
     let s2 = or(x1, x2);
