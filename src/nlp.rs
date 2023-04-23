@@ -13,3 +13,21 @@ pub fn sigmoid(x: f64) -> f64 {
 fn _sigmod() {
     println!("{}", array![-1., 1., 2.].map(|e| sigmoid(*e)))
 }
+
+/// ReLU 函数 Rectified Linear Unit，在大于 0 时输出，其他情况输出 0
+pub fn relu(x: f64) -> f64 {
+    if x > 0. {
+        x
+    } else {
+        0.
+    }
+}
+
+/// 矩阵乘积
+#[test]
+fn _matrix() {
+    let A = array![[1, 2, 3], [4, 5, 6]];
+    let B = array![[1, 2], [3, 4], [5, 6]];
+    let C = array![[1, 2], [3, 4]];
+    println!("{:?} {:?} -> {:?}", A.shape(), B.shape(), A.dot(&B).shape())
+}
