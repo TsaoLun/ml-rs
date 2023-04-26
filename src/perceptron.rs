@@ -1,4 +1,5 @@
 //! # 感知机
+#![allow(dead_code)]
 use ndarray::prelude::*;
 
 /// 与门
