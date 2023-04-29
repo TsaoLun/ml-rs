@@ -1,6 +1,8 @@
 //! # 神经网络
 #![allow(non_snake_case)]
 #![allow(dead_code)]
+use std::collections::HashMap;
+
 use ndarray::prelude::*;
 
 /// 矩阵乘积
@@ -35,7 +37,7 @@ where
 }
 
 #[test]
-fn _test_sigmod(){
+fn _test_sigmod() {
     let X = array![1.0, 0.5];
     let W1 = array![[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]];
     let B1 = array![0.1, 0.2, 0.3];
@@ -53,4 +55,40 @@ pub fn relu(x: f64) -> f64 {
     } else {
         0.
     }
+}
+
+/// 输出层的激活函数 sigma()
+/// 对于回归问题可以使用恒等函数，二元分类问题可以使用 sigmoid 函数，多元分类问题可以使用 softmax 函数
+fn identity_function<T>(x: T) -> T {
+    x
+}
+
+fn init_network() -> HashMap<&'static str, Array<f64, IxDyn>> {
+    let mut network = HashMap::new() as HashMap<&str, Array<f64, IxDyn>>;
+    network.insert("W1", array![[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]].into_dyn());
+    network.insert("b1", array![0.1, 0.2, 0.3].into_dyn());
+    network.insert("W2", array![[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]].into_dyn());
+    network.insert("b2", array![0.1, 0.2].into_dyn());
+    network.insert("W3", array![[0.1, 0.3], [0.2, 0.4]].into_dyn());
+    network.insert("b3", array![0.1, 0.2].into_dyn());
+    return network;
+}
+
+fn forward(network: HashMap<&str, Array<f64, IxDyn>>, x: Array1<f64>) -> Array<f64, IxDyn> {
+    let (W1, W2, W3) = (&network["W1"], &network["W2"], &network["W3"]);
+    let (b1, b2, b3) = (&network["b1"], &network["b2"], &network["b3"]);
+    let a1 = x.dot(&W1.clone().into_dimensionality::<Ix2>().unwrap()) + b1;
+    let z1 = sigmod(a1).into_dimensionality::<Ix1>().unwrap();
+    let a2 = z1.dot(&W2.clone().into_dimensionality::<Ix2>().unwrap()) + b2;
+    let z2 = sigmod(a2).into_dimensionality::<Ix1>().unwrap();
+    let a3 = z2.dot(&W3.clone().into_dimensionality::<Ix2>().unwrap()) + b3;
+    a3
+}
+
+#[test]
+fn test_forward() {
+    let network = init_network();
+    let x = array![1.0, 0.5];
+    let y = forward(network, x);
+    println!("{:?}", y);
 }
