@@ -75,8 +75,16 @@ fn init_network() -> HashMap<&'static str, Array<f64, IxDyn>> {
 }
 
 fn forward(mut network: HashMap<&str, Array<f64, IxDyn>>, x: Array1<f64>) -> Array<f64, IxDyn> {
-    let (W1, W2, W3) = (network.remove("W1"), network.remove("W2"), network.remove("W3"));
-    let (b1, b2, b3) = (network.remove("b1"), network.remove("b2"), network.remove("b3"));
+    let (W1, W2, W3) = (
+        network.remove("W1"),
+        network.remove("W2"),
+        network.remove("W3"),
+    );
+    let (b1, b2, b3) = (
+        network.remove("b1"),
+        network.remove("b2"),
+        network.remove("b3"),
+    );
     let a1 = x.dot(&W1.unwrap().into_dimensionality::<Ix2>().unwrap()) + b1.unwrap();
     let z1 = sigmod(a1).into_dimensionality::<Ix1>().unwrap();
     let a2 = z1.dot(&W2.unwrap().into_dimensionality::<Ix2>().unwrap()) + b2.unwrap();
@@ -92,4 +100,57 @@ fn test_forward() {
     let x = array![1.0, 0.5];
     let y = forward(network, x);
     println!("{:?}", y);
+}
+
+/// softmax 实现：分子为输入信号的指数函数，分母为输入信号的指数函数之和
+fn exp(n: f64) -> f64 {
+    n.exp()
+}
+
+#[test]
+fn test_exp() {
+    let a = array![0.3, 2.9, 4.0];
+    let exp_a = a.map(|e| exp(*e));
+    println!("{}", exp_a);
+    let sum_exp_a = exp_a.sum();
+    println!("{}", sum_exp_a);
+    let y = exp_a / sum_exp_a;
+    println!("{}", y);
+}
+
+fn origin_softmax<D: Dimension>(a: Array<f64, D>) -> Array<f64, D> {
+    let exp_a = a.map(|e| exp(*e));
+    let sum_exp_a = exp_a.sum();
+    exp_a / sum_exp_a
+}
+
+/// 避免溢出
+fn softmax<D: Dimension>(a: Array<f64, D>) -> Array<f64, D> {
+    let mut max = None as Option<f64>;
+    a.for_each(|e| {
+        if let Some(x) = max {
+            if e > &x {
+                max = Some(*e);
+            }
+        } else {
+            max = Some(*e);
+        }
+    });
+    match max {
+        None => panic!("missing number"),
+        Some(c) => {
+            let exp_a = (a - c).map(|e| exp(*e));
+            let sum_exp_a = exp_a.sum();
+            exp_a / sum_exp_a
+        }
+    }
+}
+
+#[test]
+fn test_softmax() {
+    let a = array![1010., 1000., 990.];
+    println!("{:?}", origin_softmax(a.clone())); // NaN
+    println!("{:?}", softmax(a));
+    let a = array![0.3, 2.9, 4.0];
+    println!("{} {}", softmax(a.clone()), softmax(a).sum()); // 输出总和为 1
 }
