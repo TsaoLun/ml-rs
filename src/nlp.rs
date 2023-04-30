@@ -74,14 +74,15 @@ fn init_network() -> HashMap<&'static str, Array<f64, IxDyn>> {
     return network;
 }
 
-fn forward(network: HashMap<&str, Array<f64, IxDyn>>, x: Array1<f64>) -> Array<f64, IxDyn> {
-    let (W1, W2, W3) = (&network["W1"], &network["W2"], &network["W3"]);
-    let (b1, b2, b3) = (&network["b1"], &network["b2"], &network["b3"]);
-    let a1 = x.dot(&W1.clone().into_dimensionality::<Ix2>().unwrap()) + b1;
+fn forward(mut network: HashMap<&str, Array<f64, IxDyn>>, x: Array1<f64>) -> Array<f64, IxDyn> {
+    let (W1, W2, W3) = (network.remove("W1"), network.remove("W2"), network.remove("W3"));
+    let (b1, b2, b3) = (network.remove("b1"), network.remove("b2"), network.remove("b3"));
+    let a1 = x.dot(&W1.unwrap().into_dimensionality::<Ix2>().unwrap()) + b1.unwrap();
     let z1 = sigmod(a1).into_dimensionality::<Ix1>().unwrap();
-    let a2 = z1.dot(&W2.clone().into_dimensionality::<Ix2>().unwrap()) + b2;
+    let a2 = z1.dot(&W2.unwrap().into_dimensionality::<Ix2>().unwrap()) + b2.unwrap();
     let z2 = sigmod(a2).into_dimensionality::<Ix1>().unwrap();
-    let a3 = z2.dot(&W3.clone().into_dimensionality::<Ix2>().unwrap()) + b3;
+    let a3 = z2.dot(&W3.unwrap().into_dimensionality::<Ix2>().unwrap()) + b3.unwrap();
+    println!("{:?}", network);
     a3
 }
 
