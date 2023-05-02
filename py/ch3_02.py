@@ -3,6 +3,7 @@ from dataset.mnist import load_mnist
 import sys
 import os
 import pickle
+import unittest
 sys.path.append(os.pardir)
 
 
@@ -17,9 +18,9 @@ def softmax(a):
 
 
 def get_data():
-    (x_train, t_train), (x_test, t_test) = load_mnist(
+    (img_train, label_train), (img_test, label_test) = load_mnist(
         flatten=True, normalize=True, one_hot_label=False)
-    return x_test, t_test
+    return img_test, label_test
 
 
 def init_network():
@@ -39,13 +40,34 @@ def predict(network, x):
     return softmax(a3)
 
 
-x, t = get_data()
-network = init_network()
+class TestNLP(unittest.TestCase):
+    @unittest.skip
+    def test_accuract(self):
+        imgs, labels = get_data()
+        network = init_network()
+        accuracy_cnt = 0
 
-accuracy_cnt = 0
-for i in range(len(x)):
-    y = predict(network, x[i])
-    p = np.argmax(y)
-    if p == t[i]:
-        accuracy_cnt += 1
-print("Accuracy:" + str(float(accuracy_cnt) / len(x)))
+        for i in range(len(imgs)):
+            y = predict(network, imgs[i])
+            p = np.argmax(y)
+            if p == labels[i]:
+                accuracy_cnt += 1
+        print("\nAccuracy:" + str(float(accuracy_cnt) / len(imgs)))
+
+    def test_batch(self):
+        imgs, labels = get_data()
+        network = init_network()
+
+        batch_size = 100
+        accuracy_cnt = 0
+
+        for i in range(0, len(imgs), batch_size):
+            img_batch = imgs[i:i+batch_size]
+            y_batch = predict(network, img_batch)
+            p = np.argmax(y_batch, axis=1)
+            accuracy_cnt += np.sum(p == labels[i:i+batch_size])
+        print("\nAccuracy:" + str(float(accuracy_cnt) / len(imgs)))
+
+
+if __name__ == '__main__':
+    unittest.main()
