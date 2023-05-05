@@ -38,6 +38,17 @@ def numerical_gradient(f, x: np.ndarray):
     return grad
 
 
+# 梯度下降法求极(小)值
+def gradient_descent(f, init_x: np.ndarray, lr=0.01, step_num=100):
+    x = init_x
+
+    for i in range(step_num):
+        grad = numerical_gradient(f, x)
+        x -= lr * grad
+
+    return x
+
+
 class DrawDiff(unittest.TestCase):
     @unittest.skip
     def test_f1(self):
@@ -55,9 +66,15 @@ class DrawDiff(unittest.TestCase):
         y = function_2(np.array([x0, x1]))
         pass
 
+    @unittest.skip
     def test_ng(self):
         print(numerical_gradient(function_2, np.array([3.0, 4.0])))
         print(numerical_gradient(function_2, np.array([0.0, 2.0])))
+
+    def test_gd(self):
+        init_x = np.array([-3.0, 4.0])
+        print(gradient_descent(function_2, init_x=init_x, lr=0.1, step_num=100))
+
 
 if __name__ == "__main__":
     unittest.main()
