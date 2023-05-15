@@ -31,7 +31,7 @@ def onehot_cross_entropy_error(y, t):
 # label with mini-batch
 
 
-def label_cross_entropy_error(y, t):
+def label_cross_entropy_error(y: np.ndarray, t: np.ndarray):
     if y.ndim == 1:
         t = t.reshape(1, t.size)
         y = y.reshape(1, y.size)

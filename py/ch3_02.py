@@ -11,7 +11,7 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def softmax(a):
+def softmax(a: np.ndarray) -> np.ndarray:
     exp_a = np.exp(a)
     sum_exp_a = np.sum(exp_a)
     return exp_a / sum_exp_a

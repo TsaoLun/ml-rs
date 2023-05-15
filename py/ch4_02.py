@@ -63,7 +63,7 @@ class DrawDiff(unittest.TestCase):
     def test_f2(self):
         x0 = np.arange(-3.0, 3.0, 0.1)
         x1 = np.arange(-3.0, 3.0, 0.1)
-        y = function_2(np.array([x0, x1]))
+        _ = function_2(np.array([x0, x1]))
         pass
 
     @unittest.skip
@@ -73,7 +73,7 @@ class DrawDiff(unittest.TestCase):
 
     def test_gd(self):
         init_x = np.array([-3.0, 4.0])
-        print(gradient_descent(function_2, init_x=init_x, lr=0.1, step_num=100))
+        print(gradient_descent(function_2, init_x, 0.1, 100))
 
 
 if __name__ == "__main__":
