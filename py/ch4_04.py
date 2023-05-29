@@ -43,7 +43,7 @@ class TwoLayerNet:
         accuracy = np.sum(y == t) / float(x.shape[0])
         return accuracy
 
-    def numerical_gradient(self, x, t):
+    def numerical_gradient(self, x, t): # 太慢啦
         loss_W = lambda _: self.loss(x, t)  # noqa: E731
 
         grads = {}
